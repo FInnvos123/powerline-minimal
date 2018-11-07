@@ -43,4 +43,4 @@ precmd() {
 
 [[ ${precmd_functions[(r)precmd]} != "precmd" ]] && precmd_functions+=(precmd)
 
-PROMPT='$(prompt)'
+PROMPT="$(prompt)"
