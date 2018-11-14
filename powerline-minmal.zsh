@@ -1,4 +1,5 @@
 separator_char='\ue0b1'
+branch_sym='\ue0a0'
 reset_color='%{%f%k%}'
 
 print-last-code() {
@@ -21,7 +22,7 @@ print-git-status() {
             text_color=blue
         fi
 
-        echo -n "%F{$text_color} $branch $reset_color$separator_char"
+        echo -n "%F{$text_color} $branch_sym $branch $reset_color$separator_char"
     fi
 }
 
