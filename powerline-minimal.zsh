@@ -1,3 +1,5 @@
+setopt PROMPT_SUBST
+
 separator_char='\ue0b1'
 branch_sym='\ue0a0'
 reset_color='%{%f%k%}'
@@ -44,4 +46,4 @@ precmd() {
 
 [[ ${precmd_functions[(r)precmd]} != "precmd" ]] && precmd_functions+=(precmd)
 
-PROMPT="$(prompt)"
+PROMPT='$(prompt)'
