@@ -2,6 +2,7 @@ setopt PROMPT_SUBST
 
 separator_char='\ue0b1'
 branch_sym='\ue0a0'
+detached_head_sym='\u233f'
 reset_color='%{%f%k%}'
 
 print-last-code() {
@@ -13,18 +14,30 @@ print-user() {
 }
 
 print-git-status() {
-    local branch=$(git symbolic-ref --short HEAD 2> /dev/null)
+    if [[ -n "$(git rev-parse --is-inside-work-tree 2> /dev/null)" ]]; then
+        local branch=$(git symbolic-ref --short HEAD 2> /dev/null)
 
-    if [[ -n "$branch" ]]; then
-        git diff --quiet --ignore-submodules --exit-code HEAD > /dev/null 2>&1
+        if [[ -n "$branch" ]]; then
+            # Branch
 
-        if [[ "$?" != 0 ]]; then
-            text_color=red
+            git diff --quiet --ignore-submodules --exit-code HEAD > /dev/null 2>&1
+
+            if [[ "$?" != 0 ]]; then
+                text_color=red
+            else
+                text_color=blue
+            fi
+
+            echo -n "%F{$text_color} $branch_sym $branch"
         else
-            text_color=blue
+            # Detached head
+
+            local ref=$(git rev-parse --short HEAD)
+
+            echo -n "%F{blue} $detached_head_sym $ref"
         fi
 
-        echo -n "%F{$text_color} $branch_sym $branch $reset_color$separator_char"
+        echo -n " $reset_color$separator_char"
     fi
 }
 
