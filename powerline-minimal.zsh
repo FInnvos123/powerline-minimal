@@ -35,7 +35,7 @@ print-git-status() {
 
             read -r commits_behind commits_ahead <<< "$(git-upstream-status)"
             [[ "$commits_ahead" -gt 0 ]] && git_status+=" $git_ahead_sym$commits_ahead"
-            [[ "$commits_behind" -gt 0 ]] && git_satus+=" $git_behind_sym$commits_behind"
+            [[ "$commits_behind" -gt 0 ]] && git_status+=" $git_behind_sym$commits_behind"
 
             read -r untracked_count unstaged_count staged_count <<< "$(git-status)"
             if [[ "$untracked_count" -gt 0 || "$unstaged_count" -gt 0 || "$staged_count" -gt 0 ]]; then
