@@ -37,6 +37,10 @@ print-git-status() {
             [[ "$commits_ahead" -gt 0 ]] && git_status+=" $git_ahead_sym$commits_ahead"
             [[ "$commits_behind" -gt 0 ]] && git_status+=" $git_behind_sym$commits_behind"
 
+            local stash_count
+            stash_count="$(git stash list 2> /dev/null | wc -l | tr -d ' ')"
+            [[ "$stash_count" -gt 0 ]] && git_status+=" {$stash_count}"
+
             read -r untracked_count unstaged_count staged_count <<< "$(git-status)"
             if [[ "$untracked_count" -gt 0 || "$unstaged_count" -gt 0 || "$staged_count" -gt 0 ]]; then
                 [[ "$staged_count" -gt 0 ]] && git_status+=" $git_staged_sym$staged_count" && text_color=$git_staged_color
