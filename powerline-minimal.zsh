@@ -1,8 +1,16 @@
 setopt PROMPT_SUBST
 
 separator_char='\ue0b1'
-branch_sym='\ue0a0'
-detached_head_sym='\u233f'
+git_branch_sym='\ue0a0'
+git_detached_head_sym='\u233f'
+git_untracked_sym="?:"
+git_unstaged_sym="U:"
+git_staged_sym="S:"
+
+git_clean_color='blue'
+git_untracked_color='red'
+git_unstaged_color='yellow'
+git_staged_color='cyan'
 reset_color='%{%f%k%}'
 
 print-last-code() {
@@ -20,21 +28,23 @@ print-git-status() {
         if [[ -n "$branch" ]]; then
             # Branch
 
-            git diff --quiet --ignore-submodules --exit-code HEAD > /dev/null 2>&1
+            text_color=$git_clean_color
+            git_status=""
 
-            if [[ "$?" != 0 ]]; then
-                text_color=red
-            else
-                text_color=blue
+            read -r untracked_count unstaged_count staged_count <<< "$(git-status)"
+            if [[ "$untracked_count" -gt 0 || "$unstaged_count" -gt 0 || "$staged_count" -gt 0 ]]; then
+                [[ "$staged_count" -gt 0 ]] && git_status+=" $git_staged_sym$staged_count" && text_color=$git_staged_color
+                [[ "$unstaged_count" -gt 0 ]] && git_status+=" $git_unstaged_sym$unstaged_count" && text_color=$git_unstaged_color
+                [[ "$untracked_count" -gt 0 ]] && git_status+=" $git_untracked_sym$untracked_count" && text_color=$git_untracked_color
             fi
 
-            echo -n "%F{$text_color} $branch_sym $branch"
+            echo -n "%F{$text_color} $git_branch_sym $branch$git_status"
         else
             # Detached head
 
             local ref=$(git rev-parse --short HEAD)
 
-            echo -n "%F{blue} $detached_head_sym $ref"
+            echo -n "%F{blue} $git_detached_head_sym $ref"
         fi
 
         echo -n " $reset_color$separator_char"
@@ -60,3 +70,27 @@ precmd() {
 [[ ${precmd_functions[(r)precmd]} != "precmd" ]] && precmd_functions+=(precmd)
 
 PROMPT='$(prompt)'
+
+git-status() {
+    git status --porcelain -u 2> /dev/null | awk '
+    BEGIN {
+        untracked=0;
+        unstaged=0;
+        staged=0;
+    }
+    {
+        if ($0 ~ /^\?\? .+/) {
+            untracked += 1
+        } else {
+            if ($0 ~ /^.[^ ] .+/) {
+                unstaged += 1
+            }
+            if ($0 ~ /^[^ ]. .+/) {
+                staged += 1
+            }
+        }
+    }
+    END {
+        print untracked "\t" unstaged "\t" staged
+    }'
+}
