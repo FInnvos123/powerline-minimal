@@ -6,6 +6,8 @@ git_detached_head_sym='\u233f'
 git_untracked_sym="?:"
 git_unstaged_sym="U:"
 git_staged_sym="S:"
+git_ahead_sym='\u2191'
+git_behind_sym='\u2193'
 
 git_clean_color='blue'
 git_untracked_color='red'
@@ -29,7 +31,11 @@ print-git-status() {
             # Branch
 
             text_color=$git_clean_color
-            git_status=""
+            local git_status
+
+            read -r commits_behind commits_ahead <<< "$(git-upstream-status)"
+            [[ "$commits_ahead" -gt 0 ]] && git_status+=" $git_ahead_sym$commits_ahead"
+            [[ "$commits_behind" -gt 0 ]] && git_satus+=" $git_behind_sym$commits_behind"
 
             read -r untracked_count unstaged_count staged_count <<< "$(git-status)"
             if [[ "$untracked_count" -gt 0 || "$unstaged_count" -gt 0 || "$staged_count" -gt 0 ]]; then
@@ -93,4 +99,14 @@ git-status() {
     END {
         print untracked "\t" unstaged "\t" staged
     }'
+}
+
+git-upstream() {
+    local ref
+    ref="$(git symbolic-ref -q HEAD 2> /dev/null)" || return 1
+    git for-each-ref --format="%(upstream:short)" "$ref"
+}
+
+git-upstream-status() {
+    git rev-list --left-right --count "$(git-upstream)...HEAD" 2> /dev/null
 }
