@@ -8,11 +8,13 @@ git_unstaged_sym="U:"
 git_staged_sym="S:"
 git_ahead_sym='\u2191'
 git_behind_sym='\u2193'
+rbenv_sym='r'
 
 git_clean_color='blue'
 git_untracked_color='red'
 git_unstaged_color='yellow'
 git_staged_color='cyan'
+rbenv_color='red'
 reset_color='%{%f%k%}'
 
 print-last-code() {
@@ -61,6 +63,15 @@ print-git-status() {
     fi
 }
 
+print-rbenv-version() {
+    if which rbenv &> /dev/null; then
+        rbenv=$(rbenv version-name) || return
+        if [ $rbenv != "system" ]; then
+            echo -n " %F{$rbenv_color}$rbenv_sym $rbenv $reset_color$separator_char"
+        fi
+    fi
+}
+
 print-dir() {
     echo -n " %~ $separator_char"
 }
@@ -69,6 +80,7 @@ prompt() {
     print-last-code
     print-user
     print-git-status
+    print-rbenv-version
     print-dir
     echo -n " "
 }
