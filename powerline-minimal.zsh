@@ -1,6 +1,14 @@
 setopt PROMPT_SUBST
 
-separator_char='\ue0b1'
+separator_char=''
+separator_char_pts='\ue0b1'
+separator_char_tty='>'
+
+case "$(tty)" in
+    "/dev/pts"*) separator_char=$separator_char_pts ;;
+    "/dev/tty"*) separator_char=$separator_char_tty ;;
+esac
+
 git_branch_sym='\ue0a0'
 git_detached_head_sym='\u233f'
 git_untracked_sym="?:"
