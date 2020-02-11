@@ -29,10 +29,6 @@ print-last-code() {
     [[ (-n "$last_code") && ($last_code -ne 0) ]] && echo -n " %F{red}$last_code$reset_color $separator_char"
 }
 
-print-user() {
-    echo -n " %F{240}%n $reset_color$separator_char"
-}
-
 print-git-status() {
     if [[ -n "$(git rev-parse --is-inside-work-tree 2> /dev/null)" ]]; then
         local branch=$(git symbolic-ref --short HEAD 2> /dev/null)
@@ -86,7 +82,6 @@ print-dir() {
 
 prompt() {
     print-last-code
-    print-user
     print-git-status
     print-rbenv-version
     print-dir
