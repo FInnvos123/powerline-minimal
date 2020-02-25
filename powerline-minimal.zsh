@@ -77,7 +77,7 @@ print-rbenv-version() {
 }
 
 print-dir() {
-    echo -n " %~ $separator_char"
+    echo -n " $(sed "s:\([^/]\)[^/]*/:\1/:g" <<< ${PWD/#$HOME/\~}) $separator_char"
 }
 
 prompt() {
